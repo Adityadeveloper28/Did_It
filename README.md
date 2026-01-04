@@ -4,6 +4,22 @@ This is a new [**React Native**](https://reactnative.dev) project, bootstrapped 
 
 > **Note**: Make sure you have completed the [Set Up Your Environment](https://reactnative.dev/docs/set-up-your-environment) guide before proceeding.
 
+## Step 0: Initialize a new React Native project (Optional)
+
+If you're starting from scratch and want to create a new React Native project, you can use the React Native CLI:
+
+```sh
+npx @react-native-community/cli init HelloApp
+```
+
+This command will create a new React Native project with the name "HelloApp". You can replace "HelloApp" with your desired project name.
+
+After the project is created, navigate to the project directory:
+
+```sh
+cd HelloApp
+```
+
 ## Step 1: Start Metro
 
 First, you will need to run **Metro**, the JavaScript build tool for React Native.
