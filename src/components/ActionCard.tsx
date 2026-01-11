@@ -1,9 +1,7 @@
 import { View, Text, Pressable, StyleSheet } from 'react-native';
 import React from 'react';
-
-type Props = {
-  title: string;
-  description?: string;
+import { Action } from '../types/models';
+type Props = Pick<Action, 'title' | 'description'> & {
   onPress: () => void;
 };
 

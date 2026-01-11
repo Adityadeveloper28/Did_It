@@ -6,8 +6,9 @@ import {
   FlatList,
   Pressable,
 } from 'react-native';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import ActionCard from '../components/ActionCard';
+import { saveActions, loadActions } from '../services/storage';
 
 const DummyAction = [
   { id: '1', title: 'Action One', description: 'This is action one' },
@@ -17,7 +18,18 @@ const DummyAction = [
 ];
 
 const ActionListScreen = ({ navigation }: any) => {
-  const [actions, setActions] = useState(DummyAction);
+  const [actions, setActions] = useState<any[]>([]);
+
+  useEffect(() => {
+    (async () => {
+      const storedActions = await loadActions();
+      setActions(storedActions);
+    })();
+  }, []);
+
+  useEffect(() => {
+    saveActions(actions);
+  }, [actions]);
 
   const addAction = (newAction: {
     id: string;
@@ -30,6 +42,7 @@ const ActionListScreen = ({ navigation }: any) => {
         id: Date.now().toString(),
         title: newAction.title,
         description: newAction.description,
+        proofs: [],
       },
     ]);
   };
@@ -44,9 +57,7 @@ const ActionListScreen = ({ navigation }: any) => {
           <ActionCard
             title={item.title}
             description={item.description}
-            onPress={() =>
-              navigation.navigate('ProofList', { action: item })
-            }
+            onPress={() => navigation.navigate('ProofList', { action: item,setActions })}
           />
         )}
       />

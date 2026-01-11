@@ -3,10 +3,8 @@ import React, { useState } from 'react';
 import ProofCard from '../components/ProofCard';
 
 const ProofListScreen = ({ route, navigation }: any) => {
-  const { action } = route.params;
-  const [proofs, setProofs] = useState([
-    { id: '1', text: 'changes', createdAt: '2024-01-01' },
-  ]);
+  const { action, setActions } = route.params;
+  const proofs = action.proofs || [];
   return (
     <View style={styles.container}>
       {/* <Text style={styles.text}>ProofListScreen</Text>0 */}
@@ -20,22 +18,37 @@ const ProofListScreen = ({ route, navigation }: any) => {
         keyExtractor={item => item.id}
         contentContainerStyle={{ padding: 16 }}
         renderItem={({ item }) => (
-          <ProofCard text={item.text} createdAt={item.createdAt} />
+          <ProofCard
+            id={item.id}
+            text={item.text}
+            createdAt={item.createdAt}
+            imageUri={item.imageUri}
+          />
         )}
       />
       <Pressable
         style={styles.fab}
         onPress={() =>
           navigation.navigate('AddProof', {
-            addProof: (text: string) =>
-              setProofs(prev => [
-                ...prev,
-                {
-                  id: Date.now().toString(),
-                  text,
-                  createdAt: new Date().toISOString(),
-                },
-              ]),
+            addProof: ({ text, imageUri }: any) =>
+              setActions((prev: any[]) => {
+                return prev.map(a =>
+                  a.id === action.id
+                    ? {
+                        ...a,
+                        proofs: [
+                          ...a.proofs,
+                          {
+                            id: Date.now().toString(),
+                            text,
+                            imageUri,
+                            createdAt: new Date().toISOString(),
+                          },
+                        ],
+                      }
+                    : a,
+                );
+              }),
           })
         }
       >

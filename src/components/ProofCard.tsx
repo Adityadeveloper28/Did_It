@@ -1,14 +1,20 @@
-import { View, Text, StyleSheet } from "react-native";
+import { View, Text, StyleSheet, Image } from "react-native";
+import { Proof } from "../types/models";
 
-type Props = {
-  text: string;
-  createdAt: string;
-};
-
-export default function ProofCard({ text, createdAt }: Props) {
+export default function ProofCard({
+  id,
+  text,
+  createdAt,
+  imageUri,
+}: Proof) {
   return (
     <View style={styles.card}>
-      <Text style={styles.text}>{text}</Text>
+      {text ? <Text style={styles.text}>{text}</Text> : null}
+
+      {imageUri ? (
+        <Image source={{ uri: imageUri }} style={styles.image} />
+      ) : null}
+
       <Text style={styles.date}>
         {new Date(createdAt).toLocaleString()}
       </Text>
@@ -31,5 +37,11 @@ const styles = StyleSheet.create({
     marginTop: 6,
     fontSize: 12,
     color: "#999",
+  },
+  image: {
+    width: "100%",
+    height: 200,
+    borderRadius: 8,
+    marginTop: 10,
   },
 });
