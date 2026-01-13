@@ -1,113 +1,167 @@
-This is a new [**React Native**](https://reactnative.dev) project, bootstrapped using [`@react-native-community/cli`](https://github.com/react-native-community/cli).
+# Did_It - Proof Tracking App 📸
 
-# Getting Started
+A React Native mobile application that helps you track your daily actions and maintain proof of completion with text descriptions and photos.  Perfect for building accountability and keeping a visual log of your accomplishments.
 
-> **Note**: Make sure you have completed the [Set Up Your Environment](https://reactnative.dev/docs/set-up-your-environment) guide before proceeding.
+## ✨ Features
 
-## Step 0: Initialize a new React Native project (Optional)
+- **Action Management**: Create and organize actions you want to track
+- **Proof Logging**: Add proof entries for each action with: 
+  - Text descriptions
+  - Photo attachments (from gallery or camera)
+  - Automatic timestamps
+- **Persistent Storage**: All data saved locally using AsyncStorage
+- **Clean UI**: Intuitive navigation with floating action buttons
+- **Cross-Platform**:  Runs on both iOS and Android
 
-If you're starting from scratch and want to create a new React Native project, you can use the React Native CLI:
+## 📱 Screenshots
 
-```sh
-npx @react-native-community/cli init HelloApp
+The app consists of four main screens: 
+- **Action List**: View all your tracked actions
+- **Add Action**: Create new actions to track
+- **Proof List**:  View all proofs for a specific action
+- **Add Proof**: Submit proof with text and/or images
+
+## 🚀 Getting Started
+
+### Prerequisites
+
+- Node.js >= 20
+- React Native development environment set up ([official guide](https://reactnative.dev/docs/environment-setup))
+- For iOS: Xcode and CocoaPods
+- For Android: Android Studio and Android SDK
+
+### Installation
+
+1. **Clone the repository**
+   ```bash
+   git clone https://github.com/Adityadeveloper28/Did_It.git
+   cd Did_It
+   ```
+
+2. **Install dependencies**
+   ```bash
+   npm install
+   ```
+
+3. **Install iOS dependencies** (macOS only)
+   ```bash
+   cd ios
+   bundle install
+   pod install
+   cd ..
+   ```
+
+4. **Start Metro bundler**
+   ```bash
+   npm start
+   ```
+
+5. **Run the app**
+   
+   For Android:
+   ```bash
+   npm run android
+   ```
+   
+   For iOS:
+   ```bash
+   npm run ios
+   ```
+
+## 🏗️ Project Structure
+
+```
+Did_It/
+├── src/
+│   ├── components/       # Reusable UI components
+│   │   ├── ActionCard.tsx
+│   │   └── ProofCard.tsx
+│   ├── navigation/       # Navigation configuration
+│   │   └── AppNavigator.tsx
+│   ├── screens/          # Screen components
+│   │   ├── ActionListScreen.tsx
+│   │   ├── AddActionScreen.tsx
+│   │   ├── ProofListScreen.tsx
+│   │   └── AddProofScreen.tsx
+│   ├── services/         # Business logic & utilities
+│   │   └── storage.ts
+│   ├── types/            # TypeScript type definitions
+│   │   └── models.ts
+│   └── styles/           # Shared styles
+├── android/              # Android native code
+├── ios/                  # iOS native code
+└── App.tsx               # Root component
 ```
 
-This command will create a new React Native project with the name "HelloApp". You can replace "HelloApp" with your desired project name.
+## 📦 Key Dependencies
 
-After the project is created, navigate to the project directory:
+- **React Native 0.82. 1**:  Core framework
+- **React Navigation**: Screen navigation
+- **AsyncStorage**: Local data persistence
+- **React Native Image Picker**: Camera/gallery access
+- **TypeScript**: Type safety
 
-```sh
-cd HelloApp
+## 💡 Usage Example
+
+1. **Create an Action**
+   - Tap the `+` button on the home screen
+   - Enter a title (e.g., "Daily Workout")
+   - Add an optional description
+   - Save the action
+
+2. **Add Proof**
+   - Tap on any action card
+   - Tap the `+` button to add proof
+   - Describe what you did
+   - Optionally attach a photo
+   - Submit the proof
+
+3. **View History**
+   - All proofs are timestamped and saved
+   - Browse your proof history for any action
+
+## 🧪 Testing
+
+Run the test suite: 
+
+```bash
+npm test
 ```
 
-## Step 1: Start Metro
+## 🛠️ Development
 
-First, you will need to run **Metro**, the JavaScript build tool for React Native.
+- **Linting**: `npm run lint`
+- **TypeScript**: Full type checking enabled
+- **Code Style**: ESLint + Prettier configured
 
-To start the Metro dev server, run the following command from the root of your React Native project:
+## 📄 License
 
-```sh
-# Using npm
-npm start
+This project is private.  Please contact the maintainer for usage permissions. 
 
-# OR using Yarn
-yarn start
-```
+## 👤 Maintainer
 
-## Step 2: Build and run your app
+**Aditya** ([@Adityadeveloper28](https://github.com/Adityadeveloper28))
 
-With Metro running, open a new terminal window/pane from the root of your React Native project, and use one of the following commands to build and run your Android or iOS app:
+## 🤝 Contributing
 
-### Android
+Contributions are welcome! Please follow these steps:
 
-```sh
-# Using npm
-npm run android
+1. Fork the repository
+2. Create a feature branch (`git checkout -b feature/AmazingFeature`)
+3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
+4. Push to the branch (`git push origin feature/AmazingFeature`)
+5. Open a Pull Request
 
-# OR using Yarn
-yarn android
-```
+## 📞 Support
 
-### iOS
+If you encounter any issues or have questions: 
+- Open an [issue](https://github.com/Adityadeveloper28/Did_It/issues)
+- Contact the maintainer directly
 
-For iOS, remember to install CocoaPods dependencies (this only needs to be run on first clone or after updating native deps).
+## 🙏 Acknowledgments
 
-The first time you create a new project, run the Ruby bundler to install CocoaPods itself:
+Built with React Native and powered by the amazing React Native community.
 
-```sh
-bundle install
-```
+---
 
-Then, and every time you update your native dependencies, run:
-
-```sh
-bundle exec pod install
-```
-
-For more information, please visit [CocoaPods Getting Started guide](https://guides.cocoapods.org/using/getting-started.html).
-
-```sh
-# Using npm
-npm run ios
-
-# OR using Yarn
-yarn ios
-```
-
-If everything is set up correctly, you should see your new app running in the Android Emulator, iOS Simulator, or your connected device.
-
-This is one way to run your app — you can also build it directly from Android Studio or Xcode.
-
-## Step 3: Modify your app
-
-Now that you have successfully run the app, let's make changes!
-
-Open `App.tsx` in your text editor of choice and make some changes. When you save, your app will automatically update and reflect these changes — this is powered by [Fast Refresh](https://reactnative.dev/docs/fast-refresh).
-
-When you want to forcefully reload, for example to reset the state of your app, you can perform a full reload:
-
-- **Android**: Press the <kbd>R</kbd> key twice or select **"Reload"** from the **Dev Menu**, accessed via <kbd>Ctrl</kbd> + <kbd>M</kbd> (Windows/Linux) or <kbd>Cmd ⌘</kbd> + <kbd>M</kbd> (macOS).
-- **iOS**: Press <kbd>R</kbd> in iOS Simulator.
-
-## Congratulations! :tada:
-
-You've successfully run and modified your React Native App. :partying_face:
-
-### Now what?
-
-- If you want to add this new React Native code to an existing application, check out the [Integration guide](https://reactnative.dev/docs/integration-with-existing-apps).
-- If you're curious to learn more about React Native, check out the [docs](https://reactnative.dev/docs/getting-started).
-
-# Troubleshooting
-
-If you're having issues getting the above steps to work, see the [Troubleshooting](https://reactnative.dev/docs/troubleshooting) page.
-
-# Learn More
-
-To learn more about React Native, take a look at the following resources:
-
-- [React Native Website](https://reactnative.dev) - learn more about React Native.
-- [Getting Started](https://reactnative.dev/docs/environment-setup) - an **overview** of React Native and how setup your environment.
-- [Learn the Basics](https://reactnative.dev/docs/getting-started) - a **guided tour** of the React Native **basics**.
-- [Blog](https://reactnative.dev/blog) - read the latest official React Native **Blog** posts.
-- [`@facebook/react-native`](https://github.com/facebook/react-native) - the Open Source; GitHub **repository** for React Native.
+**Note**: Make sure you have completed the [React Native environment setup](https://reactnative.dev/docs/environment-setup) before running this project.
