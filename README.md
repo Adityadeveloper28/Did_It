@@ -1,81 +1,118 @@
 # Did_It - Proof Tracking App 📸
 
-A React Native mobile application that helps you track your daily actions and maintain proof of completion with text descriptions and photos.  Perfect for building accountability and keeping a visual log of your accomplishments.
+> A React Native mobile application that helps you track your daily actions and maintain proof of completion with text descriptions and photos.  Build accountability and keep a visual log of your accomplishments.
+
+[![React Native](https://img.shields.io/badge/React%20Native-0. 82. 1-blue.svg)](https://reactnative.dev/)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5.8.3-blue.svg)](https://www.typescriptlang.org/)
+[![License](https://img.shields.io/badge/License-Private-red.svg)]()
+
+---
 
 ## ✨ Features
 
-- **Action Management**: Create and organize actions you want to track
-- **Proof Logging**: Add proof entries for each action with: 
+- **📝 Action Management**: Create and organize actions you want to track
+- **📷 Proof Logging**: Add proof entries for each action with: 
   - Text descriptions
   - Photo attachments (from gallery or camera)
   - Automatic timestamps
-- **Persistent Storage**: All data saved locally using AsyncStorage
-- **Clean UI**: Intuitive navigation with floating action buttons
-- **Cross-Platform**:  Runs on both iOS and Android
+- **💾 Persistent Storage**: All data saved locally using AsyncStorage
+- **🎨 Clean UI**: Intuitive navigation with floating action buttons
+- **📱 Cross-Platform**:  Runs on both iOS and Android
 
-## 📱 Screenshots
-
-The app consists of four main screens: 
-- **Action List**: View all your tracked actions
-- **Add Action**: Create new actions to track
-- **Proof List**:  View all proofs for a specific action
-- **Add Proof**: Submit proof with text and/or images
+---
 
 ## 🚀 Getting Started
 
 ### Prerequisites
 
-- Node.js >= 20
-- React Native development environment set up ([official guide](https://reactnative.dev/docs/environment-setup))
-- For iOS: Xcode and CocoaPods
-- For Android: Android Studio and Android SDK
+Before you begin, ensure you have the following installed: 
+
+- **Node.js** (>= 20)
+- **npm** or **yarn**
+- **React Native CLI** - Follow the [React Native environment setup](https://reactnative.dev/docs/environment-setup) guide
+- **Xcode** (for iOS development on macOS)
+- **Android Studio** (for Android development)
 
 ### Installation
 
 1. **Clone the repository**
-   ```bash
-   git clone https://github.com/Adityadeveloper28/Did_It.git
-   cd Did_It
-   ```
+
+```bash
+git clone https://github.com/Adityadeveloper28/Did_It.git
+cd Did_It
+```
 
 2. **Install dependencies**
-   ```bash
-   npm install
-   ```
+
+```bash
+npm install
+```
 
 3. **Install iOS dependencies** (macOS only)
-   ```bash
-   cd ios
-   bundle install
-   pod install
-   cd ..
-   ```
 
-4. **Start Metro bundler**
-   ```bash
-   npm start
-   ```
+```bash
+cd ios
+bundle install
+bundle exec pod install
+cd ..
+```
 
-5. **Run the app**
-   
-   For Android:
-   ```bash
-   npm run android
-   ```
-   
-   For iOS:
-   ```bash
-   npm run ios
-   ```
+### Running the App
 
-## 🏗️ Project Structure
+#### For iOS
+
+```bash
+npm run ios
+```
+
+#### For Android
+
+```bash
+npm run android
+```
+
+#### Start Metro Bundler
+
+```bash
+npm start
+```
+
+---
+
+## 💡 Usage
+
+### 1. Create an Action
+
+1. Tap the **`+`** button on the home screen
+2. Enter a title (e.g., "Daily Workout")
+3. Add an optional description
+4. Save the action
+
+### 2. Add Proof
+
+1. Tap on any action card
+2. Tap the **`+`** button to add proof
+3. Describe what you did
+4. Optionally attach a photo from gallery or camera
+5. Submit the proof
+
+### 3. View History
+
+- All proofs are timestamped and saved
+- Browse your proof history for any action
+- View attached photos in full detail
+
+---
+
+## 📂 Project Structure
 
 ```
 Did_It/
 ├── src/
 │   ├── components/       # Reusable UI components
 │   │   ├── ActionCard.tsx
-│   │   └── ProofCard.tsx
+│   │   ├── ProofCard.tsx
+│   │   └── PrimaryButton.tsx
 │   ├── navigation/       # Navigation configuration
 │   │   └── AppNavigator.tsx
 │   ├── screens/          # Screen components
@@ -85,62 +122,97 @@ Did_It/
 │   │   └── AddProofScreen.tsx
 │   ├── services/         # Business logic & utilities
 │   │   └── storage.ts
-│   ├── types/            # TypeScript type definitions
-│   │   └── models.ts
-│   └── styles/           # Shared styles
+│   └── types/            # TypeScript type definitions
+│       └── models. ts
+├── server/               # Backend API (Node.js + Express)
+│   ├── config/           # Database & service configs
+│   ├── middleware/       # Auth & upload middleware
+│   ├── models/           # MongoDB models
+│   └── routes/           # API routes
 ├── android/              # Android native code
 ├── ios/                  # iOS native code
-└── App.tsx               # Root component
+├── App.tsx               # Root component
+└── package.json          # Dependencies
 ```
+
+---
 
 ## 📦 Key Dependencies
 
-- **React Native 0.82. 1**:  Core framework
-- **React Navigation**: Screen navigation
-- **AsyncStorage**: Local data persistence
-- **React Native Image Picker**: Camera/gallery access
-- **TypeScript**: Type safety
+| Package | Version | Purpose |
+|---------|---------|---------|
+| **React Native** | 0.82.1 | Core framework |
+| **React Navigation** | 7.x | Screen navigation |
+| **AsyncStorage** | 2.2.0 | Local data persistence |
+| **React Native Image Picker** | 8.2.1 | Camera/gallery access |
+| **TypeScript** | 5.8.3 | Type safety |
 
-## 💡 Usage Example
-
-1. **Create an Action**
-   - Tap the `+` button on the home screen
-   - Enter a title (e.g., "Daily Workout")
-   - Add an optional description
-   - Save the action
-
-2. **Add Proof**
-   - Tap on any action card
-   - Tap the `+` button to add proof
-   - Describe what you did
-   - Optionally attach a photo
-   - Submit the proof
-
-3. **View History**
-   - All proofs are timestamped and saved
-   - Browse your proof history for any action
+---
 
 ## 🧪 Testing
 
-Run the test suite: 
+Run the test suite:
 
 ```bash
 npm test
 ```
 
+Run linting:
+
+```bash
+npm run lint
+```
+
+---
+
 ## 🛠️ Development
 
-- **Linting**: `npm run lint`
-- **TypeScript**: Full type checking enabled
-- **Code Style**: ESLint + Prettier configured
+### Available Scripts
 
-## 📄 License
+- `npm start` - Start the Metro bundler
+- `npm run android` - Run on Android emulator/device
+- `npm run ios` - Run on iOS simulator/device
+- `npm run lint` - Run ESLint
+- `npm test` - Run Jest tests
 
-This project is private.  Please contact the maintainer for usage permissions. 
+### Code Style
 
-## 👤 Maintainer
+This project uses: 
+- **ESLint** with `@react-native` config
+- **Prettier** for code formatting
+- **TypeScript** for type checking
 
-**Aditya** ([@Adityadeveloper28](https://github.com/Adityadeveloper28))
+---
+
+## 🌐 Backend API (Optional)
+
+The project includes a Node.js/Express backend in the `server/` directory with:
+
+- **Authentication**: JWT-based user authentication
+- **Actions API**: CRUD operations for actions
+- **Proofs API**: CRUD operations with image upload to Cloudinary
+- **MongoDB**: Database for persistent storage
+
+To run the backend:
+
+```bash
+cd server
+npm install
+npm start
+```
+
+**Note**: Configure environment variables in `.env` file (see `server/. env.example`)
+
+---
+
+## 📱 Screens
+
+1. **Action List** - View all your tracked actions
+2. **Add Action** - Create new actions to track
+3. **Proof List** - View all proofs for a specific action
+4. **Add Proof** - Submit proof with text and/or images
+
+---
 
 ## 🤝 Contributing
 
@@ -152,15 +224,43 @@ Contributions are welcome! Please follow these steps:
 4. Push to the branch (`git push origin feature/AmazingFeature`)
 5. Open a Pull Request
 
+For detailed guidelines, see [CONTRIBUTING.md](CONTRIBUTING.md) (if available)
+
+---
+
+## 📄 License
+
+This project is **private**. Please contact the maintainer for usage permissions.
+
+---
+
+## 👤 Maintainer
+
+**Aditya** ([@Adityadeveloper28](https://github.com/Adityadeveloper28))
+
+---
+
 ## 📞 Support
 
 If you encounter any issues or have questions: 
-- Open an [issue](https://github.com/Adityadeveloper28/Did_It/issues)
-- Contact the maintainer directly
+
+- 🐛 Open an [issue](https://github.com/Adityadeveloper28/Did_It/issues)
+- 📧 Contact the maintainer directly
+
+---
 
 ## 🙏 Acknowledgments
 
-Built with React Native and powered by the amazing React Native community.
+Built with ❤️ using React Native and powered by the amazing React Native community. 
+
+---
+
+## 🔗 Useful Resources
+
+- [React Native Documentation](https://reactnative.dev/)
+- [React Navigation Docs](https://reactnavigation.org/)
+- [TypeScript Documentation](https://www.typescriptlang.org/)
+- [React Native Environment Setup](https://reactnative.dev/docs/environment-setup)
 
 ---
 
