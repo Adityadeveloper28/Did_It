@@ -1,0 +1,46 @@
+
+# ignore node modules
+node_modules/
+# ignore environment variables file
+.env
+# ignore log files
+logs/
+*.log
+# ignore build output
+dist/
+build/
+# ignore temporary files
+tmp/
+*.tmp
+# ignore OS generated files
+.DS_Store
+Thumbs.db
+# ignore coverage reports
+coverage/
+
+# ignore IDE specific files
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+# ignore npm debug files
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+# ignore lock files
+package-lock.json
+yarn.lock
+# ignore test output
+test-output/
+# ignore compiled files
+*.tsbuildinfo
+# ignore Docker files
+docker-compose.override.yml
+Dockerfile.dev
+# ignore server certificates
+certs/
+*.pem
+# ignore temporary upload files
+uploads/tmp/
+uploads/.temp/
+uploads/
