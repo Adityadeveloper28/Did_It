@@ -2,7 +2,7 @@
 
 > A React Native mobile application that helps you track your daily actions and maintain proof of completion with text descriptions and photos.  Build accountability and keep a visual log of your accomplishments.
 
-[![React Native](https://img.shields.io/badge/React%20Native-0. 82. 1-blue.svg)](https://reactnative.dev/)
+[![React Native](https://img.shields.io/badge/React%20Native-0.82.1-blue.svg)](https://reactnative.dev/)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.8.3-blue.svg)](https://www.typescriptlang.org/)
 [![License](https://img.shields.io/badge/License-Private-red.svg)]()
 
