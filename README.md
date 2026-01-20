@@ -1,6 +1,6 @@
 # Did_It - Proof Tracking App 📸
 
-> A React Native mobile application that helps you track your daily actions and maintain proof of completion with text descriptions and photos.  Build accountability and keep a visual log of your accomplishments.
+> A React Native mobile application that helps you track your daily actions and maintain proof of completion with text descriptions and photos. Build accountability and keep a visual log of your accomplishments.
 
 [![React Native](https://img.shields.io/badge/React%20Native-0.82.1-blue.svg)](https://reactnative.dev/)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.8.3-blue.svg)](https://www.typescriptlang.org/)
@@ -113,18 +113,30 @@ Did_It/
 │   │   ├── ActionCard.tsx
 │   │   ├── ProofCard.tsx
 │   │   └── PrimaryButton.tsx
+│   ├── context/          # React Context providers
+│   │   └── AuthContext.tsx
 │   ├── navigation/       # Navigation configuration
-│   │   └── AppNavigator.tsx
+│   │   ├── AppNavigator.tsx
+│   │   └── AuthNavigator.tsx
 │   ├── screens/          # Screen components
 │   │   ├── ActionListScreen.tsx
 │   │   ├── AddActionScreen.tsx
+│   │   ├── AddProofScreen.tsx
 │   │   ├── ProofListScreen.tsx
-│   │   └── AddProofScreen.tsx
-│   ├── services/         # Business logic & utilities
-│   │   └── storage.ts
-│   └── types/            # TypeScript type definitions
-│       └── models. ts
-├── server/               # Backend API (Node.js + Express)
+│   │   ├── LoginScreen.tsx
+│   │   ├── RegisterScreen.tsx
+│   │   └── ProfileScreen.tsx
+│   ├── services/         # Business logic & API services
+│   │   ├── storage.ts
+│   │   ├── action.ts
+│   │   ├── api.ts
+│   │   ├── auth.ts
+│   │   └── proof.ts
+│   ├── types/            # TypeScript type definitions
+│   │   └── models.ts
+│   └── utils/            # Utility functions
+│       └── formateDate.ts
+├── server/               # Optional Node.js backend (for cloud sync)
 │   ├── config/           # Database & service configs
 │   ├── middleware/       # Auth & upload middleware
 │   ├── models/           # MongoDB models
@@ -186,22 +198,41 @@ This project uses:
 
 ## 🌐 Backend API (Optional)
 
-The project includes a Node.js/Express backend in the `server/` directory with:
+**Note**: The backend is **completely optional**. The app works perfectly with local storage only using AsyncStorage.
+
+The project includes an optional Node.js/Express backend in the `server/` directory for users who want **cloud synchronization** and **user authentication** features:
 
 - **Authentication**: JWT-based user authentication
-- **Actions API**: CRUD operations for actions
+- **Actions API**: CRUD operations for actions with cloud storage
 - **Proofs API**: CRUD operations with image upload to Cloudinary
-- **MongoDB**: Database for persistent storage
+- **MongoDB**: Database for persistent cloud storage
 
-To run the backend:
+### Running the Backend (Optional)
 
+If you want to enable cloud sync:
+
+1. Navigate to the server directory:
 ```bash
 cd server
+```
+
+2. Install dependencies:
+```bash
 npm install
+```
+
+3. Configure environment variables:
+   - Create a `.env` file based on the requirements
+   - Configure MongoDB connection string
+   - Add Cloudinary credentials (if using image upload)
+   - Set JWT secret key
+
+4. Start the server:
+```bash
 npm start
 ```
 
-**Note**: Configure environment variables in `.env` file (see `server/. env.example`)
+**Note**: The app will continue to work with local storage if the backend is not running.
 
 ---
 
@@ -211,6 +242,9 @@ npm start
 2. **Add Action** - Create new actions to track
 3. **Proof List** - View all proofs for a specific action
 4. **Add Proof** - Submit proof with text and/or images
+5. **Login** - User authentication (when backend is enabled)
+6. **Register** - Create new account (when backend is enabled)
+7. **Profile** - User profile management (when backend is enabled)
 
 ---
 
