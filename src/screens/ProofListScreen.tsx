@@ -1,54 +1,79 @@
-import { View, Text, StyleSheet, FlatList, Pressable } from 'react-native';
-import React, { useState } from 'react';
-import ProofCard from '../components/ProofCard';
+import {
+  View,
+  Text,
+  StyleSheet,
+  FlatList,
+  Pressable,
+} from "react-native";
+import React, { useEffect, useState } from "react";
+import ProofCard from "../components/ProofCard";
+import { getActionById } from "../services/action";
+import { useIsFocused } from "@react-navigation/native";
 
 const ProofListScreen = ({ route, navigation }: any) => {
-  const { action, setActions } = route.params;
-  const proofs = action.proofs || [];
+  const { actionId, title, description } = route.params;
+  console.log("ProofListScreen params:", route.params);
+
+  const [proofs, setProofs] = useState<any[]>([]);
+  const [loading, setLoading] = useState(false);
+
+  const isFocused = useIsFocused();
+
+  useEffect(() => {
+    if (isFocused) {
+      loadAction();
+    }
+  }, [isFocused]);
+
+  const loadAction = async () => {
+    try {
+      setLoading(true);
+      console.log("Loading proofs for actionId:", actionId);
+      const action = await getActionById(actionId);
+      console.log("Loaded action:", action);  
+      setProofs(action.proofs || []);
+    } catch (err) {
+      console.error("Failed to load proofs", err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <View style={styles.container}>
-      {/* <Text style={styles.text}>ProofListScreen</Text>0 */}
+      {/* Header */}
       <View style={styles.header}>
-        <Text style={styles.title}>{action.title}</Text>
-        <Text style={styles.description}>{action.description}</Text>
+        <Text style={styles.title}>{title}</Text>
+        {description ? (
+          <Text style={styles.description}>{description}</Text>
+        ) : null}
       </View>
 
-      <FlatList
-        data={proofs}
-        keyExtractor={item => item.id}
-        contentContainerStyle={{ padding: 16 }}
-        renderItem={({ item }) => (
-          <ProofCard
-            id={item.id}
-            text={item.text}
-            createdAt={item.createdAt}
-            imageUri={item.imageUri}
-          />
-        )}
-      />
+      {/* Proof list */}
+      {loading ? (
+        <Text style={styles.loading}>Loading...</Text>
+      ) : (
+        <FlatList
+          data={proofs}
+          keyExtractor={item => item._id}
+          contentContainerStyle={{ padding: 16 }}
+          renderItem={({ item }) => (
+            <ProofCard
+              id={item._id}
+              text={item.text}
+              createdAt={item.createdAt}
+              imageUri={item.imageUrl}
+            />
+          )}
+        />
+      )}
+
+      {/* Add Proof */}
       <Pressable
         style={styles.fab}
         onPress={() =>
-          navigation.navigate('AddProof', {
-            addProof: ({ text, imageUri }: any) =>
-              setActions((prev: any[]) => {
-                return prev.map(a =>
-                  a.id === action.id
-                    ? {
-                        ...a,
-                        proofs: [
-                          ...a.proofs,
-                          {
-                            id: Date.now().toString(),
-                            text,
-                            imageUri,
-                            createdAt: new Date().toISOString(),
-                          },
-                        ],
-                      }
-                    : a,
-                );
-              }),
+          navigation.navigate("AddProof", {
+            actionId,
           })
         }
       >
@@ -63,53 +88,38 @@ export default ProofListScreen;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#f2f2f2',
+    backgroundColor: "#f2f2f2",
   },
-  text: {
-    fontSize: 20,
-    fontWeight: 'bold',
+  loading: {
+    textAlign: "center",
+    marginTop: 20,
   },
   header: {
     padding: 16,
-    backgroundColor: '#fff',
+    backgroundColor: "#fff",
   },
   title: {
     fontSize: 24,
-    fontWeight: 'bold',
+    fontWeight: "bold",
   },
   description: {
     fontSize: 16,
-    color: '#555',
+    color: "#555",
     marginTop: 4,
   },
-  proofCard: {
-    backgroundColor: '#fff',
-    padding: 16,
-    borderRadius: 8,
-    marginBottom: 12,
-  },
-  proofText: {
-    fontSize: 16,
-    fontWeight: '500',
-  },
-  proofDate: {
-    fontSize: 12,
-    color: '#999',
-    marginTop: 8,
-  },
   fab: {
-    position: 'absolute',
+    position: "absolute",
     right: 20,
     bottom: 30,
-    backgroundColor: '#2563eb',
+    backgroundColor: "#2563eb",
     width: 56,
     height: 56,
     borderRadius: 28,
-    alignItems: 'center',
-    justifyContent: 'center',
+    alignItems: "center",
+    justifyContent: "center",
   },
   fabText: {
-    color: '#fff',
+    color: "#fff",
     fontSize: 28,
   },
 });

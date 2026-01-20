@@ -1,79 +1,64 @@
-import {
-  View,
-  Text,
-  StyleSheet,
-  Button,
-  FlatList,
-  Pressable,
-} from 'react-native';
+import { View, Text, StyleSheet, FlatList, Pressable } from 'react-native';
 import React, { useEffect, useState } from 'react';
 import ActionCard from '../components/ActionCard';
-import { saveActions, loadActions } from '../services/storage';
-
-const DummyAction = [
-  { id: '1', title: 'Action One', description: 'This is action one' },
-  { id: '2', title: 'Action Two', description: 'This is action two' },
-  { id: '3', title: 'Action Three', description: 'This is action three' },
-  { id: '4', title: 'Action Four', description: 'This is action four' },
-];
+import { getActions } from '../services/action';
+import { useIsFocused } from '@react-navigation/native';
 
 const ActionListScreen = ({ navigation }: any) => {
   const [actions, setActions] = useState<any[]>([]);
+  const [loading, setLoading] = useState(false);
+
+  const isFocused = useIsFocused();
 
   useEffect(() => {
-    (async () => {
-      const storedActions = await loadActions();
-      setActions(storedActions);
-    })();
-  }, []);
+    loadActions();
+  }, [isFocused]);
 
-  useEffect(() => {
-    saveActions(actions);
-  }, [actions]);
-
-  const addAction = (newAction: {
-    id: string;
-    title: string;
-    description: string;
-  }) => {
-    setActions(prev => [
-      ...prev,
-      {
-        id: Date.now().toString(),
-        title: newAction.title,
-        description: newAction.description,
-        proofs: [],
-      },
-    ]);
+  const loadActions = async () => {
+    try {
+      setLoading(true);
+      const data = await getActions();
+      console.log('Loaded actions:', data);
+      setActions(data);
+    } catch (error) {
+      console.error('Failed to load actions:', error);
+    } finally {
+      setLoading(false);
+    }
   };
+
   return (
     <View style={styles.container}>
-      {/* <Text style={styles.text}>ActionListScreen</Text> */}
-      <FlatList
-        data={actions}
-        keyExtractor={item => item.id}
-        contentContainerStyle={{ padding: 16 }}
-        renderItem={({ item }) => (
-          <ActionCard
-            title={item.title}
-            description={item.description}
-            onPress={() => navigation.navigate('ProofList', { action: item,setActions })}
-          />
-        )}
-      />
+      {loading ? (
+        <Text style={styles.loading}>Loading...</Text>
+      ) : (
+        <FlatList
+          data={actions}
+          keyExtractor={item => item._id} // ✅ FIX
+          contentContainerStyle={{ padding: 16 }}
+          renderItem={({ item }) => (
+            <ActionCard
+              title={item?.title}
+              description={item?.description}
+              onPress={() =>
+                navigation.navigate('ProofList', {
+                  actionId: item?._id,
+                  title: item?.title,
+                  description: item?.description,
+                })
+              }
+            />
+          )}
+        />
+      )}
 
       <Pressable
         style={styles.fab}
-        onPress={() =>
-          navigation.navigate('AddAction', { addAction: addAction })
-        }
+        onPress={() => navigation.navigate('AddAction')}
       >
         <Text style={styles.fabText}>+</Text>
       </Pressable>
-      {/* <Button
-        title=" Go to Proof List"
-        onPress={() => navigation.navigate('ProofList')}
-      /> */}
+      
     </View>
   );
 };
@@ -82,13 +67,12 @@ export default ActionListScreen;
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
+    flex: 1, // ✅ FIX
+    backgroundColor: '#fff',
   },
-  text: {
-    fontSize: 20,
-    fontWeight: 'bold',
+  loading: {
+    textAlign: 'center',
+    marginTop: 20,
   },
   fab: {
     position: 'absolute',

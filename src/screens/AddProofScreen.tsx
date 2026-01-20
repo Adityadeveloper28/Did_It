@@ -5,52 +5,56 @@ import {
   StyleSheet,
   Pressable,
   Image,
-} from "react-native";
-import { useState } from "react";
-import { launchImageLibrary } from "react-native-image-picker";
+} from 'react-native';
+import { useState } from 'react';
+import { launchImageLibrary } from 'react-native-image-picker';
+import { uploadProof } from '../services/proof';
 
 export default function AddProofScreen({ route, navigation }: any) {
-  const addProof = route?.params?.addProof;
+  const { actionId } = route.params;
 
-  const [text, setText] = useState("");
+  const [text, setText] = useState('');
   const [imageUri, setImageUri] = useState<string | null>(null);
+  const [loading, setLoading] = useState(false);
 
   // Safety guard (VERY IMPORTANT)
-  if (!addProof) {
-    console.warn("addProof function not provided");
-    navigation.goBack();
-    return null;
-  }
+  // if (!addProof) {
+  //   console.warn("addProof function not provided");
+  //   navigation.goBack();
+  //   return null;
+  // }
 
-  const pickImage=async()=>{
+  const pickImage = async () => {
     const result = await launchImageLibrary({
-      mediaType:'photo',
-      quality:0.7,
-    })
-    if(result.assets && result.assets.length>0){
+      mediaType: 'photo',
+      quality: 0.7,
+    });
+    if (result.assets && result.assets.length > 0) {
       setImageUri(result.assets[0].uri || null);
     }
-  }
+  };
 
-  const openCamera=async()=>{
+  const openCamera = async () => {
     const result = await launchImageLibrary({
-      mediaType:'photo',
-      quality:0.7,
-    })
-    if(result.assets && result.assets.length>0){
+      mediaType: 'photo',
+      quality: 0.7,
+    });
+    if (result.assets && result.assets.length > 0) {
       setImageUri(result.assets[0].uri || null);
     }
-  }
+  };
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     if (!text.trim()) return;
-
-    addProof(
-      {
-        text:text.trim(),
-        imageUri,
-      }
-    );
+    console.log("Submitting proof:", { actionId, text, imageUri });
+    try {
+      setLoading(true);
+      await uploadProof(actionId, text, imageUri || '');
+    } catch (error) {
+      console.error('Failed to upload proof:', error);
+    } finally {
+      setLoading(false);
+    }
     navigation.goBack();
   };
 
@@ -72,14 +76,20 @@ export default function AddProofScreen({ route, navigation }: any) {
       <View style={styles.row}>
         <Pressable style={styles.secondaryButton} onPress={pickImage}>
           <Text>Select Image</Text>
-          </Pressable>
-          <Pressable style={styles.secondaryButton} onPress={openCamera}>
+        </Pressable>
+        <Pressable style={styles.secondaryButton} onPress={openCamera}>
           <Text>Open Camera</Text>
-          </Pressable>
+        </Pressable>
       </View>
 
-      <Pressable style={styles.button} onPress={handleSubmit}>
-        <Text style={styles.buttonText}>Submit Proof</Text>
+      <Pressable
+        style={[styles.button, loading && { opacity: 0.6 }]}
+        onPress={handleSubmit}
+        disabled={loading}
+      >
+        <Text style={styles.buttonText}>
+          {loading ? 'Submitting...' : 'Submit Proof'}
+        </Text>
       </Pressable>
     </View>
   );
@@ -89,52 +99,52 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 16,
-    backgroundColor: "#fff",
+    backgroundColor: '#fff',
   },
   label: {
     fontSize: 14,
-    fontWeight: "600",
+    fontWeight: '600',
     marginBottom: 8,
   },
   input: {
     borderWidth: 1,
-    borderColor: "#ccc",
+    borderColor: '#ccc',
     borderRadius: 8,
     padding: 12,
     fontSize: 14,
   },
   textArea: {
     height: 120,
-    textAlignVertical: "top",
+    textAlignVertical: 'top',
   },
-  row:{
-    flexDirection:'row',
-    justifyContent:'space-between',
-    marginTop:12,
+  row: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginTop: 12,
   },
-  secondaryButton:{
-    padding:10,
-    borderRadius:8,
-    backgroundColor:'#e0e0e0',
-    alignItems:'center',
-    flex:1,
-    marginHorizontal:4,
-    width:"48%",
+  secondaryButton: {
+    padding: 10,
+    borderRadius: 8,
+    backgroundColor: '#e0e0e0',
+    alignItems: 'center',
+    flex: 1,
+    marginHorizontal: 4,
+    width: '48%',
   },
   button: {
     marginTop: 20,
-    backgroundColor: "#2563eb",
+    backgroundColor: '#2563eb',
     paddingVertical: 14,
     borderRadius: 8,
-    alignItems: "center",
+    alignItems: 'center',
   },
   buttonText: {
-    color: "#fff",
+    color: '#fff',
     fontSize: 16,
-    fontWeight: "600",
+    fontWeight: '600',
   },
   imagePreview: {
-    width: "100%",
+    width: '100%',
     height: 200,
     marginTop: 12,
     borderRadius: 8,

@@ -3,6 +3,7 @@ const router = express.Router();
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const User = require('../models/User');
+const auth = require('../middleware/auth');
 
 router.post('/register', async (req, res) => {
   const { name, email, password } = req.body;
@@ -44,5 +45,10 @@ router.post('/login', async (req, res) => {
   res.status(200).json({ token });
 });
 
+// GET current user profile
+router.get('/me', auth, async (req, res) => {
+  const user = await User.findById(req.userId).select('name email');
+  res.json(user);
+});
 
 module.exports = router;
