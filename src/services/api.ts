@@ -6,6 +6,13 @@ const api = axios.create({
   baseURL: 'http://10.0.2.2:5000/api',
 });
 
+// Store logout callback
+let logoutCallback: (() => void) | null = null;
+
+export const setLogoutCallback = (callback: () => void) => {
+  logoutCallback = callback;
+};
+
 // attach token to each request if available
 api.interceptors.request.use(async config => {
   const token = await AsyncStorage.getItem('token');
@@ -18,13 +25,24 @@ api.interceptors.request.use(async config => {
 // Add response interceptor to show errors
 api.interceptors.response.use(
   response => response,
-  error => {
+  async error => {
     if (error.response) {
       // Server responded with error
       const message = error.response.data?.error || error.response.data?.message;
-      if (message && Platform.OS === 'android') {
+      
+      // Handle invalid token (401 Unauthorized)
+      if (error.response.status === 401 && message?.toLowerCase().includes('token')) {
+        await AsyncStorage.removeItem('token');
+        if (logoutCallback) {
+          logoutCallback();
+        }
+        if (Platform.OS === 'android') {
+          ToastAndroid.show('Session expired. Please login again.', ToastAndroid.LONG);
+        }
+      } else if (message && Platform.OS === 'android') {
         ToastAndroid.show(message, ToastAndroid.LONG);
       }
+      
       console.log('Error status:', error.response.status);
       console.log('Error data:', error.response.data);
     } else if (error.request) {
