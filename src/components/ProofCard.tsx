@@ -1,47 +1,133 @@
-import { View, Text, StyleSheet, Image } from "react-native";
-import { Proof } from "../types/models";
+import { View, Text, StyleSheet, Image } from 'react-native';
+import FontAwesome6 from '@react-native-vector-icons/fontawesome6';
+import { Proof } from '../types/models';
 
-export default function ProofCard({
-  id,
-  text,
-  createdAt,
-  imageUri,
-}: Proof) {
+const formatDate = (value: string) => {
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return '';
+  return date.toLocaleDateString(undefined, {
+    day: '2-digit',
+    month: 'short',
+    year: 'numeric',
+  });
+};
+
+const getTimeAgo = (value: string) => {
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return '';
+  const diffMs = Date.now() - date.getTime();
+  const mins = Math.floor(diffMs / 60000);
+  if (mins < 1) return 'just now';
+  if (mins < 60) return mins + ' min ago';
+  const hrs = Math.floor(mins / 60);
+  if (hrs < 24) return hrs + ' hr ago';
+  const days = Math.floor(hrs / 24);
+  return days + ' day ago';
+};
+
+export default function ProofCard({ text, createdAt, imageUri }: Proof) {
+  const title = text?.trim() || 'No proof text';
+  const timeAgo = getTimeAgo(createdAt);
+  const dateText = formatDate(createdAt);
+
   return (
-    <View style={styles.card}>
-      {text ? <Text style={styles.text}>{text}</Text> : null}
+    <View style={styles.outer}>
+      <View style={styles.card}>
+        {imageUri ? (
+          <Image
+            source={{ uri: imageUri }}
+            style={styles.cover}
+            resizeMode="cover"
+          />
+        ) : (
+          <View style={styles.coverFallback}>
+            <Text style={styles.coverFallbackText}>No image attached</Text>
+          </View>
+        )}
 
-      {imageUri ? (
-        <Image source={{ uri: imageUri }} style={styles.image} />
-      ) : null}
+        <View style={styles.bottomRow}>
+          <View style={styles.avatar}>
+            <FontAwesome6
+              iconStyle="solid"
+              name="image"
+              size={14}
+              color="#4C63FF"
+            />
+          </View>
 
-      <Text style={styles.date}>
-        {new Date(createdAt).toLocaleString()}
-      </Text>
+          <View style={styles.textWrap}>
+            <Text style={styles.title} numberOfLines={1}>
+              {title}
+            </Text>
+            <Text style={styles.timeAgo}>{timeAgo}</Text>
+          </View>
+
+          <Text style={styles.date}>{dateText}</Text>
+        </View>
+      </View>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  card: {
-    backgroundColor: "#fff",
-    padding: 16,
-    borderRadius: 8,
-    marginBottom: 12,
-    elevation: 2,
+  outer: {
+    paddingVertical: 6,
   },
-  text: {
-    fontSize: 14,
+  card: {
+    backgroundColor: '#F4F4F6',
+    borderRadius: 24,
+    padding: 10,
+  },
+  cover: {
+    width: '100%',
+    height: 220,
+    borderRadius: 18,
+  },
+  coverFallback: {
+    width: '100%',
+    height: 220,
+    borderRadius: 18,
+    backgroundColor: '#EDEDF2',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  coverFallbackText: {
+    fontSize: 13,
+    color: '#8A84A5',
+    fontWeight: '600',
+  },
+  bottomRow: {
+    marginTop: 12,
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  avatar: {
+    width: 34,
+    height: 34,
+    borderRadius: 17,
+    backgroundColor: '#EEF1FF',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginRight: 10,
+  },
+  textWrap: {
+    flex: 1,
+  },
+  title: {
+    fontSize: 15,
+    fontWeight: '700',
+    color: '#2E2942',
+  },
+  timeAgo: {
+    marginTop: 2,
+    fontSize: 12,
+    color: '#8A84A5',
+    fontWeight: '600',
   },
   date: {
-    marginTop: 6,
+    marginLeft: 10,
     fontSize: 12,
-    color: "#999",
-  },
-  image: {
-    width: "100%",
-    height: 200,
-    borderRadius: 8,
-    marginTop: 10,
+    color: '#6B6581',
+    fontWeight: '700',
   },
 });

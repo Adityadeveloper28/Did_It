@@ -7,12 +7,14 @@ import { NavigationContainer } from '@react-navigation/native';
 import { setLogoutCallback } from './src/services/api';
 
 const RootNavigator = () => {
-  const { isLoggedIn, logout } = useContext(AuthContext);
-  
+  const { isLoggedIn, logout, authReady } = useContext(AuthContext);
+
   useEffect(() => {
     setLogoutCallback(logout);
   }, [logout]);
-  
+
+  if (!authReady) return null; // or a loader/splash component
+
   return isLoggedIn ? <AppNavigator /> : <AuthNavigator />;
 };
 

@@ -4,15 +4,19 @@ import {
   StyleSheet,
   FlatList,
   Pressable,
-} from "react-native";
-import React, { useEffect, useState } from "react";
-import ProofCard from "../components/ProofCard";
-import { getActionById } from "../services/action";
-import { useIsFocused } from "@react-navigation/native";
+  ActivityIndicator,
+  Image,
+} from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { useIsFocused } from '@react-navigation/native';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import FontAwesome6 from '@react-native-vector-icons/fontawesome6';
+import ProofCard from '../components/ProofCard';
+import { getActionById } from '../services/action';
+import Loading from '../components/Loading';
 
 const ProofListScreen = ({ route, navigation }: any) => {
   const { actionId, title, description } = route.params;
-  console.log("ProofListScreen params:", route.params);
 
   const [proofs, setProofs] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
@@ -28,35 +32,61 @@ const ProofListScreen = ({ route, navigation }: any) => {
   const loadAction = async () => {
     try {
       setLoading(true);
-      console.log("Loading proofs for actionId:", actionId);
       const action = await getActionById(actionId);
-      console.log("Loaded action:", action);  
-      setProofs(action.proofs || []);
+      setProofs(action?.proofs || []);
     } catch (err) {
-      console.error("Failed to load proofs", err);
+      console.error('Failed to load proofs', err);
     } finally {
       setLoading(false);
     }
   };
 
+  const EmptyState = () => (
+    <View style={styles.emptyState}>
+      <Image
+        source={require('../assets/action.jpg')}
+        style={styles.emptyImage}
+        resizeMode="contain"
+      />
+      <Text style={styles.emptyTitle}>No proof found</Text>
+      <Text style={styles.emptySubtitle}>
+        Add your first proof to start tracking progress
+      </Text>
+    </View>
+  );
+
   return (
-    <View style={styles.container}>
-      {/* Header */}
-      <View style={styles.header}>
-        <Text style={styles.title}>{title}</Text>
-        {description ? (
-          <Text style={styles.description}>{description}</Text>
-        ) : null}
+    <SafeAreaView style={styles.container} edges={['bottom']}>
+      <View style={styles.headerCard}>
+        <View style={styles.headerTopRow}>
+          <View style={styles.titleDescBlock}>
+            <Text style={styles.title} numberOfLines={1}>
+              {title || 'Proofs'}
+            </Text>
+            <Text style={styles.descriptionLine} numberOfLines={2}>
+              {description || 'Track your progress with proof logs'}
+            </Text>
+          </View>
+
+          <View style={styles.countChip}>
+            <Text style={styles.countText}>{proofs.length}</Text>
+          </View>
+        </View>
       </View>
 
-      {/* Proof list */}
       {loading ? (
-        <Text style={styles.loading}>Loading...</Text>
+        <Loading text="Loading proofs..." />
       ) : (
         <FlatList
+          style={styles.list}
           data={proofs}
           keyExtractor={item => item._id}
-          contentContainerStyle={{ padding: 16 }}
+          contentContainerStyle={[
+            styles.listContentBase,
+            proofs.length === 0
+              ? styles.emptyListContainer
+              : styles.listContent,
+          ]}
           renderItem={({ item }) => (
             <ProofCard
               id={item._id}
@@ -65,21 +95,22 @@ const ProofListScreen = ({ route, navigation }: any) => {
               imageUri={item.imageUrl}
             />
           )}
+          ListEmptyComponent={<EmptyState />}
+          showsVerticalScrollIndicator={false}
         />
       )}
 
-      {/* Add Proof */}
       <Pressable
         style={styles.fab}
         onPress={() =>
-          navigation.navigate("AddProof", {
+          navigation.navigate('AddProof', {
             actionId,
           })
         }
       >
-        <Text style={styles.fabText}>+</Text>
+        <FontAwesome6 iconStyle="solid" name="plus" size={20} color="#fff" />
       </Pressable>
-    </View>
+    </SafeAreaView>
   );
 };
 
@@ -88,38 +119,107 @@ export default ProofListScreen;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#f2f2f2",
+    backgroundColor: '#FFFFFF',
   },
-  loading: {
-    textAlign: "center",
-    marginTop: 20,
+  headerCard: {
+    marginHorizontal: 16,
+    marginTop: 8,
+    marginBottom: 6,
+    padding: 14,
+    borderRadius: 14,
+    backgroundColor: '#F7F5FB',
+    borderWidth: 1,
+    borderColor: '#ECE8F3',
   },
-  header: {
-    padding: 16,
-    backgroundColor: "#fff",
+  headerTopRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  titleDescBlock: {
+    flex: 1,
+    marginRight: 10,
   },
   title: {
-    fontSize: 24,
-    fontWeight: "bold",
+    fontSize: 20,
+    fontWeight: '700',
+    color: '#2E2942',
   },
-  description: {
-    fontSize: 16,
-    color: "#555",
+  descriptionLine: {
     marginTop: 4,
+    fontSize: 13,
+    color: '#6B6581',
+  },
+  countChip: {
+    minWidth: 34,
+    height: 34,
+    borderRadius: 17,
+    backgroundColor: '#EEF1FF',
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingHorizontal: 10,
+  },
+  countText: {
+    fontSize: 13,
+    fontWeight: '700',
+    color: '#4C63FF',
+  },
+  loadingWrap: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  loading: {
+    marginTop: 10,
+    color: '#6B6581',
+    fontSize: 14,
+    fontWeight: '600',
+  },
+  list: {
+    flex: 1,
+  },
+  listContentBase: {
+    flexGrow: 1,
+    paddingBottom: 120,
+  },
+  listContent: {
+    paddingHorizontal: 16,
+    paddingTop: 10,
+  },
+  emptyListContainer: {
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingHorizontal: 24,
+    paddingBottom: 80,
+  },
+  emptyState: {
+    alignItems: 'center',
+  },
+  emptyImage: {
+    width: 300,
+    height: 300,
+    marginBottom: 12,
+  },
+  emptyTitle: {
+    fontSize: 20,
+    fontWeight: '700',
+    color: '#2E2942',
+  },
+  emptySubtitle: {
+    marginTop: 6,
+    textAlign: 'center',
+    color: '#8A84A5',
+    fontSize: 13,
   },
   fab: {
-    position: "absolute",
+    position: 'absolute',
     right: 20,
     bottom: 30,
-    backgroundColor: "#2563eb",
-    width: 56,
-    height: 56,
-    borderRadius: 28,
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  fabText: {
-    color: "#fff",
-    fontSize: 28,
+    backgroundColor: '#4C63FF',
+    width: 58,
+    height: 58,
+    borderRadius: 29,
+    alignItems: 'center',
+    justifyContent: 'center',
+    elevation: 5,
   },
 });

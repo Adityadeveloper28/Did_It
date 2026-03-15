@@ -1,5 +1,6 @@
 import { View, Text } from 'react-native';
 import React from 'react';
+import { Pressable, StyleSheet } from 'react-native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import ActionListScreen from '../screens/ActionListScreen';
 import AddActionScreen from '../screens/AddActionScreen';
@@ -12,26 +13,44 @@ const Stack = createNativeStackNavigator();
 
 const AppNavigator = () => {
   return (
-    <Stack.Navigator initialRouteName="ActionList">
+    <Stack.Navigator
+      initialRouteName="ActionList"
+      screenOptions={{
+        headerStyle: { backgroundColor: '#FFFFFF' },
+        headerShadowVisible: false,
+        headerTintColor: '#2E2942',
+        headerTitleStyle: {
+          color: '#2C2C2C',
+          fontSize: 22,
+          fontWeight: '700',
+        },
+      }}
+    >
       <Stack.Screen
         name="ActionList"
         component={ActionListScreen}
         options={({ navigation }) => ({
           title: 'ProofLog',
           headerRight: () => (
-            <Text
-              style={{ marginRight: 16, fontSize: 16, color: 'blue' }}
+            <Pressable
               onPress={() => navigation.navigate('Profile')}
+              style={styles.profileIconButton}
+              hitSlop={8}
             >
-              <FontAwesome6 name="circle-user" size={24} color="blue" />
-            </Text>
+              <FontAwesome6
+                iconStyle="solid"
+                name="circle-user"
+                size={18}
+                color="#4C63FF"
+              />
+            </Pressable>
           ),
         })}
       />
       <Stack.Screen
         name="AddAction"
         component={AddActionScreen}
-        options={{ title: 'Add  Action' }}
+        options={{ title: 'Add Action' }}
       />
       <Stack.Screen
         name="ProofList"
@@ -51,5 +70,18 @@ const AppNavigator = () => {
     </Stack.Navigator>
   );
 };
+
+const styles = StyleSheet.create({
+  profileIconButton: {
+    width: 30,
+    height: 30,
+    borderRadius: 17,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: '#F7F5FB',
+    borderWidth: 1,
+    borderColor: '#ECE8F3',
+  },
+});
 
 export default AppNavigator;

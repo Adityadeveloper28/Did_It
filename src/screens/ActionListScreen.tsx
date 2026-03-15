@@ -1,8 +1,18 @@
-import { View, Text, StyleSheet, FlatList, Pressable } from 'react-native';
+import {
+  View,
+  Text,
+  StyleSheet,
+  FlatList,
+  Pressable,
+  Image,
+  ActivityIndicator,
+} from 'react-native';
 import React, { useEffect, useState } from 'react';
 import ActionCard from '../components/ActionCard';
 import { getActions } from '../services/action';
 import { useIsFocused } from '@react-navigation/native';
+import FontAwesome6 from '@react-native-vector-icons/fontawesome6';
+import Loading from '../components/Loading';
 
 const ActionListScreen = ({ navigation }: any) => {
   const [actions, setActions] = useState<any[]>([]);
@@ -18,7 +28,6 @@ const ActionListScreen = ({ navigation }: any) => {
     try {
       setLoading(true);
       const data = await getActions();
-      console.log('Loaded actions:', data);
       setActions(data);
     } catch (error) {
       console.error('Failed to load actions:', error);
@@ -27,15 +36,30 @@ const ActionListScreen = ({ navigation }: any) => {
     }
   };
 
+  const EmptyState = () => (
+    <View style={styles.emptyState}>
+      <Image
+        source={require('../assets/action.jpg')}
+        style={styles.emptyImage}
+        resizeMode="contain"
+      />
+      <Text style={styles.emptyTitle}>No action found</Text>
+    </View>
+  );
+
   return (
     <View style={styles.container}>
       {loading ? (
-        <Text style={styles.loading}>Loading...</Text>
+        <Loading text="Loading actions..." />
       ) : (
         <FlatList
           data={actions}
-          keyExtractor={item => item._id} // ✅ FIX
-          contentContainerStyle={{ padding: 16 }}
+          keyExtractor={item => item._id}
+          contentContainerStyle={
+            actions.length === 0
+              ? styles.emptyListContainer
+              : styles.listContent
+          }
           renderItem={({ item }) => (
             <ActionCard
               title={item?.title}
@@ -49,6 +73,8 @@ const ActionListScreen = ({ navigation }: any) => {
               }
             />
           )}
+          ListEmptyComponent={<EmptyState />}
+          showsVerticalScrollIndicator={false}
         />
       )}
 
@@ -56,9 +82,8 @@ const ActionListScreen = ({ navigation }: any) => {
         style={styles.fab}
         onPress={() => navigation.navigate('AddAction')}
       >
-        <Text style={styles.fabText}>+</Text>
+        <FontAwesome6 iconStyle="solid" name="plus" size={22} color="#fff" />
       </Pressable>
-      
     </View>
   );
 };
@@ -67,18 +92,54 @@ export default ActionListScreen;
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1, // ✅ FIX
+    flex: 1,
     backgroundColor: '#fff',
   },
+  loadingWrap: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
   loading: {
+    marginTop: 10,
     textAlign: 'center',
-    marginTop: 20,
+    color: '#6B6581',
+    fontSize: 15,
+    fontWeight: '600',
+    letterSpacing: 0.3,
+  },
+  listContent: {
+    padding: 16,
+    paddingBottom: 100,
+  },
+  emptyListContainer: {
+    flexGrow: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingHorizontal: 24,
+    paddingBottom: 60,
+  },
+  emptyState: {
+    alignItems: 'center',
+  },
+  emptyImage: {
+    width: 300,
+    height: 300,
+    marginBottom: 14,
+  },
+  emptyTitle: {
+    fontSize: 24,
+    fontWeight: '800',
+    fontStyle: 'italic',
+    letterSpacing: 0.6,
+    color: '#2E2942',
+    textAlign: 'center',
   },
   fab: {
     position: 'absolute',
     right: 20,
     bottom: 30,
-    backgroundColor: '#2563eb',
+    backgroundColor: '#4C63FF',
     width: 60,
     height: 60,
     borderRadius: 30,
@@ -87,8 +148,9 @@ const styles = StyleSheet.create({
     elevation: 5,
   },
   fabText: {
-    color: 'white',
-    fontSize: 30,
-    fontWeight: 'bold',
+    color: '#fff',
+    fontSize: 32,
+    fontWeight: '800',
+    lineHeight: 34,
   },
 });
