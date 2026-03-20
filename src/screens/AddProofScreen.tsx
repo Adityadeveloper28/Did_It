@@ -14,7 +14,10 @@ import { useState } from 'react';
 import { launchImageLibrary, launchCamera } from 'react-native-image-picker';
 import FontAwesome6 from '@react-native-vector-icons/fontawesome6';
 import { uploadProof } from '../services/proof';
-
+import {
+  invalidateProofsCache,
+  invalidateActionsCache,
+} from '../services/storage';
 export default function AddProofScreen({ route, navigation }: any) {
   const { actionId } = route.params;
 
@@ -51,6 +54,10 @@ export default function AddProofScreen({ route, navigation }: any) {
     try {
       setLoading(true);
       await uploadProof(actionId, text.trim(), imageUri || '');
+      await Promise.all([
+        invalidateProofsCache(actionId),
+        invalidateActionsCache(),
+      ]);
       navigation.goBack();
     } catch (error) {
       console.error('Failed to upload proof:', error);

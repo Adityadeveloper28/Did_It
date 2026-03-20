@@ -4,7 +4,6 @@ import {
   StyleSheet,
   FlatList,
   Pressable,
-  ActivityIndicator,
   Image,
 } from 'react-native';
 import React, { useEffect, useState } from 'react';
@@ -14,6 +13,12 @@ import FontAwesome6 from '@react-native-vector-icons/fontawesome6';
 import ProofCard from '../components/ProofCard';
 import { getActionById } from '../services/action';
 import Loading from '../components/Loading';
+import {
+  getProofsCache,
+  hasChanged,
+  isStale,
+  setProofsCache,
+} from '../services/storage';
 
 const ProofListScreen = ({ route, navigation }: any) => {
   const { actionId, title, description } = route.params;
@@ -25,17 +30,39 @@ const ProofListScreen = ({ route, navigation }: any) => {
 
   useEffect(() => {
     if (isFocused) {
-      loadAction();
+      void loadProofsWithCache();
     }
-  }, [isFocused]);
+  }, [isFocused, actionId]);
 
-  const loadAction = async () => {
+  const loadProofsWithCache = async () => {
+    setLoading(true);
+
+    const cache = await getProofsCache(actionId);
+
+    if (cache.exists) {
+      setProofs(cache.data);
+      setLoading(false);
+    }
+
+    const shouldFetchFromApi = !cache.exists || isStale(cache.fetchedAt, 60_000);
+
+    if (!shouldFetchFromApi) {
+      setLoading(false);
+      return;
+    }
+
     try {
-      setLoading(true);
       const action = await getActionById(actionId);
-      setProofs(action?.proofs || []);
-    } catch (err) {
-      console.error('Failed to load proofs', err);
+      const freshProofs = action?.proofs || [];
+      const changed = hasChanged(cache.signature, freshProofs);
+
+      if (changed || !cache.exists) {
+        setProofs(freshProofs);
+      }
+
+      await setProofsCache(actionId, freshProofs);
+    } catch (error) {
+      console.error('Failed to load proofs:', error);
     } finally {
       setLoading(false);
     }
@@ -162,17 +189,6 @@ const styles = StyleSheet.create({
     fontSize: 13,
     fontWeight: '700',
     color: '#4C63FF',
-  },
-  loadingWrap: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  loading: {
-    marginTop: 10,
-    color: '#6B6581',
-    fontSize: 14,
-    fontWeight: '600',
   },
   list: {
     flex: 1,

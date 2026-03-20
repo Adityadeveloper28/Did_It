@@ -6,7 +6,7 @@ import React, {
   useState,
 } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-
+import { clearAllAppCache } from '../services/storage';
 type AuthContextType = {
   isLoggedIn: boolean;
   setIsLoggedIn: React.Dispatch<React.SetStateAction<boolean>>;
@@ -59,6 +59,7 @@ const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const logout = useCallback(async () => {
     clearLogoutTimer();
     await AsyncStorage.removeItem('token');
+    await clearAllAppCache();
     setIsLoggedIn(false);
   }, [clearLogoutTimer]);
 
@@ -85,6 +86,7 @@ const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
     if (msUntilExpiry <= 0) {
       await AsyncStorage.removeItem('token');
+      await clearAllAppCache();
       clearLogoutTimer();
       setIsLoggedIn(false);
       setAuthReady(true);

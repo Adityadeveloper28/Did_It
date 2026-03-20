@@ -1,4 +1,5 @@
-import { View, Text, StyleSheet, Image } from 'react-native';
+import React, { useEffect, useRef, useState } from 'react';
+import { View, Text, StyleSheet, Image, Animated, Easing } from 'react-native';
 import FontAwesome6 from '@react-native-vector-icons/fontawesome6';
 import { Proof } from '../types/models';
 
@@ -30,15 +31,57 @@ export default function ProofCard({ text, createdAt, imageUri }: Proof) {
   const timeAgo = getTimeAgo(createdAt);
   const dateText = formatDate(createdAt);
 
+  const [isImageLoading, setIsImageLoading] = useState(Boolean(imageUri));
+  const pulse = useRef(new Animated.Value(0.45)).current;
+
+  useEffect(() => {
+    setIsImageLoading(Boolean(imageUri));
+  }, [imageUri]);
+
+  useEffect(() => {
+    if (!imageUri || !isImageLoading) return;
+
+    const loop = Animated.loop(
+      Animated.sequence([
+        Animated.timing(pulse, {
+          toValue: 1,
+          duration: 700,
+          easing: Easing.inOut(Easing.ease),
+          useNativeDriver: true,
+        }),
+        Animated.timing(pulse, {
+          toValue: 0.45,
+          duration: 700,
+          easing: Easing.inOut(Easing.ease),
+          useNativeDriver: true,
+        }),
+      ]),
+    );
+
+    loop.start();
+    return () => loop.stop();
+  }, [imageUri, isImageLoading, pulse]);
+
   return (
     <View style={styles.outer}>
       <View style={styles.card}>
         {imageUri ? (
-          <Image
-            source={{ uri: imageUri }}
-            style={styles.cover}
-            resizeMode="cover"
-          />
+          <View style={styles.coverWrap}>
+            <Image
+              source={{ uri: imageUri }}
+              style={styles.cover}
+              resizeMode="cover"
+              onLoadStart={() => setIsImageLoading(true)}
+              onLoadEnd={() => setIsImageLoading(false)}
+              onError={() => setIsImageLoading(false)}
+            />
+            {isImageLoading ? (
+              <Animated.View
+                pointerEvents="none"
+                style={[styles.coverSkeleton, { opacity: pulse }]}
+              />
+            ) : null}
+          </View>
         ) : (
           <View style={styles.coverFallback}>
             <Text style={styles.coverFallbackText}>No image attached</Text>
@@ -78,10 +121,20 @@ const styles = StyleSheet.create({
     borderRadius: 24,
     padding: 10,
   },
-  cover: {
+  coverWrap: {
     width: '100%',
     height: 220,
     borderRadius: 18,
+    overflow: 'hidden',
+    backgroundColor: '#EDEDF2',
+  },
+  cover: {
+    width: '100%',
+    height: '100%',
+  },
+  coverSkeleton: {
+    ...StyleSheet.absoluteFillObject,
+    backgroundColor: '#D8D8DE',
   },
   coverFallback: {
     width: '100%',

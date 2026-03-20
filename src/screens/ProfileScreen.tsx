@@ -1,33 +1,74 @@
 import { View, Text, StyleSheet, Pressable, Image } from 'react-native';
 import { useEffect, useState, useContext } from 'react';
+import { useIsFocused } from '@react-navigation/native';
 import FontAwesome6 from '@react-native-vector-icons/fontawesome6';
-import { getProfile, logout } from '../services/auth';
+import { getProfile } from '../services/auth';
 import { AuthContext } from '../context/AuthContext';
 import Loading from '../components/Loading';
+import {
+  getProfileCache,
+  hasChanged,
+  isStale,
+  setProfileCache,
+} from '../services/storage';
+
+type Profile = {
+  name: string;
+  email: string;
+};
 
 export default function ProfileScreen() {
-  const { setIsLoggedIn } = useContext(AuthContext);
-  const [user, setUser] = useState<{ name: string; email: string } | null>(
-    null,
-  );
+  const { logout } = useContext(AuthContext);
+  const [user, setUser] = useState<Profile | null>(null);
+  const [loading, setLoading] = useState(false);
+  const isFocused = useIsFocused();
 
   useEffect(() => {
-    loadProfile();
-  }, []);
+    if (isFocused) {
+      void loadProfileWithCache();
+    }
+  }, [isFocused]);
 
-  const loadProfile = async () => {
+  const loadProfileWithCache = async () => {
+    setLoading(true);
+
+    const cache = await getProfileCache();
+
+    if (cache.exists && cache.data) {
+      setUser(cache.data);
+      setLoading(false);
+    }
+
+    const shouldFetchFromApi = !cache.exists || isStale(cache.fetchedAt, 5 * 60_000);
+
+    if (!shouldFetchFromApi) {
+      setLoading(false);
+      return;
+    }
+
     try {
       const data = await getProfile();
-      setUser(data);
+      const changed = hasChanged(cache.signature, data);
+
+      if (changed || !cache.exists) {
+        setUser(data);
+      }
+
+      await setProfileCache(data);
     } catch (err) {
       console.error('Failed to load profile', err);
+    } finally {
+      setLoading(false);
     }
   };
 
   const handleLogout = async () => {
     await logout();
-    setIsLoggedIn(false);
   };
+
+  if (loading && !user) {
+    return <Loading text="Loading profile..." />;
+  }
 
   if (!user) {
     return <Loading text="Loading profile..." />;

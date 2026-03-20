@@ -12,7 +12,7 @@ import {
 import React, { useState } from 'react';
 import FontAwesome6 from '@react-native-vector-icons/fontawesome6';
 import { createAction } from '../services/action';
-
+import { invalidateActionsCache } from '../services/storage';
 const AddActionScreen = ({ navigation }: any) => {
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
@@ -26,6 +26,7 @@ const AddActionScreen = ({ navigation }: any) => {
     try {
       setLoading(true);
       await createAction(title.trim(), description.trim());
+      await invalidateActionsCache();
       navigation.goBack();
     } catch (error) {
       console.error('Failed to create action:', error);

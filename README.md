@@ -15,7 +15,8 @@
   - Text descriptions
   - Photo attachments (from gallery or camera)
   - Automatic timestamps
-- **💾 Persistent Storage**: All data saved locally using AsyncStorage
+- **⚡ Smart Caching**: API data is cached in AsyncStorage and updated only when stale or changed
+- **💾 Persistent Storage**: Cached actions, proofs, and profile data are available instantly on reopen
 - **🎨 Clean UI**: Intuitive navigation with floating action buttons
 - **📱 Cross-Platform**:  Runs on both iOS and Android
 
@@ -76,6 +77,71 @@ npm run android
 ```bash
 npm start
 ```
+
+---
+
+## ⚡ Caching Strategy
+
+This app uses **stale-while-revalidate caching** with AsyncStorage for faster page loads and reduced API calls.
+
+### What is cached
+
+- **Actions list**
+- **Proof list per action**
+- **User profile**
+
+### How it works
+
+1. The app first reads cached data and renders it immediately.
+2. It checks if cache is stale (TTL based).
+3. If stale, it fetches fresh data from API in the background.
+4. UI updates only if data signature has changed.
+5. Cache is invalidated after write operations (create action, add proof) and on logout.
+
+### Cache implementation files
+
+- `src/services/storage.ts` - cache read/write, staleness check, invalidation, clear-all
+- `src/screens/ActionListScreen.tsx` - cached actions load + background refresh
+- `src/screens/ProofListScreen.tsx` - cached proofs load + background refresh
+- `src/screens/ProfileScreen.tsx` - cached profile load + background refresh
+
+---
+
+## 📦 Build Android APK (Release)
+
+### 1. Configure API URL
+
+Create/update `.env` in project root:
+
+```dotenv
+API_URL=https://did-it-ashen.vercel.app/api
+```
+
+### 2. Build release APK (Windows)
+
+```powershell
+cd android
+gradlew.bat clean
+gradlew.bat assembleRelease
+```
+
+### 3. Output APK path
+
+After successful build, APK is generated at:
+
+```text
+android/app/build/outputs/apk/release/app-release.apk
+```
+
+### 4. Install on device
+
+- Copy `app-release.apk` to Android phone
+- Open APK and allow install from unknown sources if prompted
+
+### Notes
+
+- Rebuild after any `.env` change, because env values are bundled at build time.
+- For Play Store upload, configure a proper release keystore/signing config (do not use debug signing).
 
 ---
 
@@ -153,11 +219,17 @@ Did_It/
 
 | Package | Version | Purpose |
 |---------|---------|---------|
-| **React Native** | 0.82.1 | Core framework |
-| **React Navigation** | 7.x | Screen navigation |
-| **AsyncStorage** | 2.2.0 | Local data persistence |
-| **React Native Image Picker** | 8.2.1 | Camera/gallery access |
-| **TypeScript** | 5.8.3 | Type safety |
+| **React Native** | 0.82.1 | Core mobile framework |
+| **React** | 19.1.1 | UI rendering engine |
+| **React Navigation** | 7.1.26 / 7.9.0 | Stack and app navigation |
+| **AsyncStorage** | 2.2.0 | Local persistence and smart caching |
+| **Axios** | 1.13.2 | HTTP client for API requests |
+| **React Native Config** | 1.6.1 | Environment variable management |
+| **React Native Image Picker** | 8.2.1 | Camera and gallery media selection |
+| **FontAwesome6 Vector Icons** | 12.3.0 | Iconography across screens |
+| **React Native Linear Gradient** | 2.8.3 | Gradient UI elements |
+| **React Native Safe Area Context** | 5.6.2 | Safe area handling on devices |
+| **TypeScript** | 5.8.3 | Type safety and tooling |
 
 ---
 

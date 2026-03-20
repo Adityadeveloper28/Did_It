@@ -5,7 +5,6 @@ import {
   FlatList,
   Pressable,
   Image,
-  ActivityIndicator,
 } from 'react-native';
 import React, { useEffect, useState } from 'react';
 import ActionCard from '../components/ActionCard';
@@ -13,6 +12,12 @@ import { getActions } from '../services/action';
 import { useIsFocused } from '@react-navigation/native';
 import FontAwesome6 from '@react-native-vector-icons/fontawesome6';
 import Loading from '../components/Loading';
+import {
+  getActionsCache,
+  hasChanged,
+  isStale,
+  setActionsCache,
+} from '../services/storage';
 
 const ActionListScreen = ({ navigation }: any) => {
   const [actions, setActions] = useState<any[]>([]);
@@ -21,14 +26,37 @@ const ActionListScreen = ({ navigation }: any) => {
   const isFocused = useIsFocused();
 
   useEffect(() => {
-    loadActions();
+    if (isFocused) {
+      void loadActionsWithCache();
+    }
   }, [isFocused]);
 
-  const loadActions = async () => {
+  const loadActionsWithCache = async () => {
+    setLoading(true);
+
+    const cache = await getActionsCache();
+
+    if (cache.exists) {
+      setActions(cache.data);
+      setLoading(false);
+    }
+
+    const shouldFetchFromApi = !cache.exists || isStale(cache.fetchedAt, 60_000);
+
+    if (!shouldFetchFromApi) {
+      setLoading(false);
+      return;
+    }
+
     try {
-      setLoading(true);
       const data = await getActions();
-      setActions(data);
+      const changed = hasChanged(cache.signature, data);
+
+      if (changed || !cache.exists) {
+        setActions(data);
+      }
+
+      await setActionsCache(data);
     } catch (error) {
       console.error('Failed to load actions:', error);
     } finally {
@@ -95,19 +123,6 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#fff',
   },
-  loadingWrap: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  loading: {
-    marginTop: 10,
-    textAlign: 'center',
-    color: '#6B6581',
-    fontSize: 15,
-    fontWeight: '600',
-    letterSpacing: 0.3,
-  },
   listContent: {
     padding: 16,
     paddingBottom: 100,
@@ -146,11 +161,5 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     elevation: 5,
-  },
-  fabText: {
-    color: '#fff',
-    fontSize: 32,
-    fontWeight: '800',
-    lineHeight: 34,
   },
 });
